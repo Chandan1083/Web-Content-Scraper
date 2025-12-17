@@ -80,8 +80,8 @@ Visit http://localhost:8000
 3. https://www.figma.com/
 
 🎯 Use Cases
-AI / LLM data ingestion (RAG)
-Web content analysis
-Automation pipelines
-Website content monitoring
-Search indexing
+1. AI / LLM data ingestion (RAG)
+2. Web content analysis
+3. Automation pipelines
+4. Website content monitoring
+4. Search indexing
