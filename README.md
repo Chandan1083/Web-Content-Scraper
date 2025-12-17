@@ -4,6 +4,7 @@ A FastAPI-based web application that extracts static and JavaScript-rendered web
 This project supports dynamic websites, pagination, and section-based extraction, making it useful for AI pipelines, data analysis, and automation.
 
 📸 Project Preview
+
 ![Home Page]<img width="1366" height="688" alt="image" src="https://github.com/user-attachments/assets/8e4269b8-7a0b-462f-a3a4-1cf8bd9b5b64" />
 ![Scraped Output]<img width="1366" height="728" alt="image" src="https://github.com/user-attachments/assets/b45bd433-5a20-4b71-94d1-4b824be0709e" />
 
