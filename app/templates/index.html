@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Universal Website Scraper</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0%, #020617 70%);
+      color: #ffffff;
+      /* display: flex;
+      align-items: center;
+      justify-content: center; */
+    }
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      /* background: #fff; */
+      padding: 25px;
+      /* border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1); */
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .input-group {
+      display: flex;
+      gap: 10px;
+    }
+    input {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 18px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:disabled {
+      background: #9ca3af;
+    }
+    .subtitle {
+      text-align: center;
+      margin: 10px auto 20px auto;
+      color: #94a3b8; /* optional: soft gray like in screenshot */
+      font-size: 14px;
+    }
+    .loading {
+      margin-top: 10px;
+      color: #2563eb;
+    }
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+    .section {
+      margin-top: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .section-header {
+      padding: 10px;
+      background: #f1f5f9;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .section-body {
+      display: none;
+      padding: 10px;
+      background: #fff;
+    }
+    pre {
+      background: #111827;
+      color: #e5e7eb;
+      padding: 10px;
+      overflow-x: auto;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    .actions {
+      margin-top: 15px;
+      text-align: right;
+    }
+    .success-text {
+      color: #417955 !important;
+    }
+
+    .success-border {
+      border: 2px solid #22c55e !important;
+    }
+
+    /* Section success highlight */
+    .section-success {
+      background: #f0fdf4 !important;
+      border-color: #22c55e !important;
+      color: #14532d;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>🔍 Web Content Scraper</h1>
+    <div class="subtitle">Convert any website into structured JSON</div> 
+
+    <div class="input-group">
+      <input id="url" placeholder="https://example.com" />
+      <button id="scrapeBtn" onclick="scrape()">Scrape</button>
+    </div>
+
+    <div id="status"></div>
+    <div id="error" class="error"></div>
+
+    <div class="actions" id="downloadDiv" style="display:none;">
+      <button onclick="downloadJSON()">⬇ Download JSON</button>
+    </div>
+
+    <div id="sections"></div>
+  </div>
+
+<script>
+let finalResult = null;
+
+async function scrape() {
+  
+
+  const url = document.getElementById("url").value;
+  const status = document.getElementById("status");
+  const error = document.getElementById("error");
+  const sectionsDiv = document.getElementById("sections");
+  const btn = document.getElementById("scrapeBtn");
+
+  error.textContent = "";
+  sectionsDiv.innerHTML = "";
+  status.textContent = "⏳ Scraping in progress...";
+  btn.disabled = true;
+
+  try {
+    const res = await fetch("/scrape", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url })
+    });
+
+    const data = await res.json();
+    finalResult = data.result;
+
+    // status.textContent = "✅ Scraping completed";
+    status.textContent = "✔ Scraping completed";
+    status.classList.add("success-text");
+
+    // highlight input
+    document.getElementById("url").classList.add("success-border");
+
+    // show download button
+    document.getElementById("downloadDiv").style.display = "block";
+
+    document.getElementById("downloadDiv").style.display = "block";
+
+    finalResult.sections.forEach((sec, i) => {
+      const div = document.createElement("div");
+      div.className = "section section-success";
+
+
+      div.innerHTML = `
+        <div class="section-header" onclick="toggle(${i})">
+          ${sec.label} (${sec.type})
+        </div>
+        <div class="section-body" id="body-${i}">
+          <pre>${JSON.stringify(sec, null, 2)}</pre>
+        </div>
+      `;
+
+      sectionsDiv.appendChild(div);
+    });
+
+  } catch (err) {
+    error.textContent = "❌ Failed to scrape the website.";
+    status.textContent = "";
+  }
+
+  btn.disabled = false;
+}
+
+function toggle(i) {
+  const body = document.getElementById("body-" + i);
+  body.style.display = body.style.display === "block" ? "none" : "block";
+}
+
+function downloadJSON() {
+  const blob = new Blob([JSON.stringify(finalResult, null, 2)], { type: "application/json" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "scraped_result.json";
+  link.click();
+}
+</script>
+</body>
+</html>
